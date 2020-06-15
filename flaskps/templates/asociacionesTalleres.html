@@ -1,0 +1,169 @@
+{%extends "base.html"%}
+{%block title%}Inicio {%endblock title%}
+{%block head%}
+{{super()}}
+{%endblock head%}
+{% block content %}
+
+<body>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-info fade show alert-dismissible" role="alert">
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+    <div style="max-width: 500px; margin: 0 auto; padding-top: 40px;">
+        <h3>Asociar Taller - Ciclo Lectivo</h3>
+        <form method="POST" action="{{url_for('asociarTallerCiclo')}}">
+            <div class="row">
+                <div class="col">
+                    <label for="selectTaller">Selecciona taller:</label>
+                    <select id="selectTaller" class="form-control" id="taller" name="taller">
+                        <option hidden selected value> -- Seleccione Taller -- </option>
+                        {% for t in talleres %}
+                        <option value="{{t.id}}">{{t.nombre}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <p id="actt"></p>
+            <div id="divSelectCiclo" class="row" style="padding-bottom: 30px;">
+                <div class="col">
+                    <select id="selectCiclo" class="form-control" id="ciclo" name="ciclo">
+                        <option hidden selected value="0"> -- Ciclo sin asignar -- </option>
+                        {% for c in ciclos %}
+                        <option value="{{c.id}}">{{c.fecha_ini.year}} - Semestre {{c.semestre}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col">
+                    <input type="submit" class="btn btn-info" value="Aceptar">
+                </div>
+            </div>
+        </form>
+    </div>
+    <div style="max-width: 700px; margin: 0 auto; padding-top: 40px;">
+        <h3>Asociar Taller - Estudiantes</h3>
+        <form method="POST" action="{{url_for('asociarTallerEstudiantes')}}">
+            <div class="row">
+                <div class="col">
+                    <select id="selectCTestudiantes" class="form-control" id="taller" name="taller">
+                        <option hidden selected value> -- Seleccione Taller / Ciclo Lectivo -- </option>
+                        {% for ct in ciclosTalleres %}
+                        <option value="{{ct}}">{{ct['tallernombre']}} - {{ct['cicloinicio'].year}} - Semestre
+                            {{ct['semestre']}}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col" style="padding-bottom: 30px;">
+                    <select id="selectEstudiantes" class="js-example-basic-multiple" multiple id="estudiantes[]"
+                        name="estudiantes">
+                        {% for e in estudiantes %}
+                        <option value="{{e.id}}">{{e.apellido}}, {{e.nombre}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div>
+                <input type="submit" class="btn btn-info" value="Aceptar">
+            </div>
+        </form>
+    </div>
+    <div style="max-width: 700px; margin: 0 auto; padding-top: 40px;">
+        <h3>Asociar Taller - Docentes</h3>
+        <form method="POST" action="{{url_for('asociarTallerDocentes')}}">
+            <div class="row">
+                <div class="col">
+                    <select id="selectCTdocentes" class="form-control" id="taller" name="taller">
+                        <option hidden selected value> -- Seleccione Taller / Ciclo Lectivo -- </option>
+                        {% for ct in ciclosTalleres %}
+                        <option value="{{ct}}">{{ct['tallernombre']}} - {{ct['cicloinicio'].year}} - Semestre
+                            {{ct['semestre']}}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col" style="padding-bottom: 30px;">
+                    <select id="selectDocentes" class="js-example-basic-multiple" multiple id="docentes[]"
+                        name="docentes">
+                        {% for d in docentes %}
+                        <option value="{{d.id}}">{{d.apellido}}, {{d.nombre}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div>
+                <input type="submit" class="btn btn-info" value="Aceptar">
+            </div>
+        </form>
+        <div style="max-width: 700px; margin: 0 auto; padding-top: 40px;">
+            <a class="btn btn-info" href="{{ url_for('asistencia') }}">Asistencia</a>
+        </div>
+        
+    </div>
+    <script>
+        $(document).ready(function () {
+            $('#divSelectCiclo').hide()
+        })
+        $('#selectTaller').on('change', function () {
+            var id = parseInt($(this).val());
+            $.ajax({
+                url: "{{url_for('tallerSeleccionado')}}",
+                method: "POST",
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    'id': id,
+                }),
+                success: function (response) {
+                    var idciclo = response['idciclo']
+                    var lista = []
+                    $('#divSelectCiclo').show()
+                    $('#selectCiclo option').each(function () {
+                        lista.push(parseInt($(this).val()))
+                    })
+                    if (lista.includes(idciclo)) {
+                        $('#selectCiclo').val(idciclo)
+                    }
+                    else {
+                        $('#selectCiclo').val(0)
+                    }
+                }
+            })
+        })
+        $('#selectCTestudiantes').on('change', function () {
+            var val = $(this).val();
+            $.ajax({
+                url: "{{url_for('devolverEstudiantes')}}",
+                method: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({
+                    'val': val,
+                }),
+                success: function (response) {
+                    var lista = response['lista'];
+                    $('#selectEstudiantes').val(lista).trigger('change')
+                }
+            })
+        })
+        $('#selectCTdocentes').on('change', function () {
+            var val = $(this).val();
+            $.ajax({
+                url: "{{url_for('devolverDocentes')}}",
+                method: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({
+                    'val': val,
+                }),
+                success: function (response) {
+                    var lista = response['lista'];
+                    $('#selectDocentes').val(lista).trigger('change')
+                }
+            })
+        })
+    </script>
+</body>
+{% endblock content %}

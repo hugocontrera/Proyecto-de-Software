@@ -1,0 +1,61 @@
+{%extends "base.html"%}
+{%block title%}Login{%endblock title%}
+{%block head%}
+{{super()}}
+{%endblock head%}
+{% block content %}
+
+<body background="..\static\backgroundinicio.jpg" style="background-repeat: no-repeat; background-position: 50%;">
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-danger fade show alert-dismissible" role="alert">
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+    <div class="centered">
+        <div>{{error}}</div>
+        <div class="containerForm">
+            <form id="formLogin">
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input class="form-control" type="email" name="email" id="email" placeholder="Email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Contraseña:</label>
+                    <input class="form-control" name="password" style="margin-bottom: 15px;" id="password"
+                        placeholder="Contraseña" type="password" required>
+                </div>
+                <div>
+                    <input type="submit" class="btn btn-info" value="Aceptar">
+                    <input type="reset" class="btn btn-info" value="Cancelar">
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+        $(function () {
+            $('#formLogin').on('submit', function (e) {
+                e.preventDefault();
+                $.ajax({
+                    url: "{{url_for('authenticate')}}",
+                    type: "POST",
+                    data: $('#formLogin').serialize(),
+                    success: function (response) {
+                        console.log('response')
+                        if (response['ok'] == 'error') {
+                            console.log('hola');
+                            alert('credenciales invalidas!');
+                        }
+                        else{
+                            location.replace("{{url_for('index')}}")
+                        }
+                    }
+                })
+            })
+        })
+    </script>
+</body>
+{%endblock content%}

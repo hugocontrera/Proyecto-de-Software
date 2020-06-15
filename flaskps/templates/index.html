@@ -1,0 +1,39 @@
+{%extends "base.html"%}
+{%block title%}Inicio {%endblock title%}
+{%block head%}
+{{super()}}
+{%endblock head%}
+{% block content %}
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+{% for message in messages %}
+<div class="alert alert-info fade show alert-dismissible" role="alert">
+  {{ message }}
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %} 
+{% if session['email'] is defined %}
+<div class="alert alert-success fade show alert-dismissible" role="alert">
+  Bienvenido {{ session['email'] }}
+</div>
+{% endif %}
+<div style="background-color:white; border-radius:5px">
+  <p style="color:black">
+    <h2>{{titulo}}</h2>
+  </p>
+  <p style="color:black">
+    {{descripcion}}
+  </p>
+  <p>
+    <h3>{{mail}}</h3>
+  </p>
+</div>
+
+<b> ➤ Galeria de imágenes de la orquesta </b>
+<div>
+  <img src="/static/orquestagaleria1.jpg" height="224" alt="Foto de los miembros de la orquesta">
+  <img src="/static/orquestagaleria2.jpg" height="224" alt="Foto de la orquesta en vivo">
+  <img src="/static/orquestagaleria3.jpg" height="224" alt="Foto de la orquesta de violines en vivo">
+</div>
+{% endblock content %}

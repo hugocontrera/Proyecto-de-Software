@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+{%extends "base.html"%}
+{%block title%}Activar sitio{%endblock title%}
+{%block head%}
+{{super()}}
+{%endblock head%}
+{%block content%}
+
+<body id="bodyInicio">
+  <h1>El sitio se activo nuevamente</h1>
+  <a class="btn btn-info" href="{{url_for('index')}}">Volver</a>
+
+  <body>
+    {% endblock content %}

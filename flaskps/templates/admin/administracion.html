@@ -1,0 +1,38 @@
+{%extends "base.html"%}
+{%block title%}Administracion{%endblock title%}
+{%block head%}
+{{super()}}
+{%endblock head%}
+{%block content%}
+
+<body id="bodyInicio">
+    <div class="fondito">
+        <h1 style="padding-top: 15px">Menu administrador</h1>
+        <nav class="menuAdmin">
+            <form action="" method="post">
+                <br>
+                <label for="text">Titulo: </label>
+                <input type="text" id="titulo" name="titulo" style="width: 350px;" value="{{ titulo }}" >
+                </br>
+                <br>
+                <label for="descripcion">Descripcion: </label>
+                <textarea rows="5"  id="descripcion" name="descripcion"  >{{ descripcion}}</textarea>
+                </br>
+                <br>
+                <label for="text">Mail: </label>
+                <input type="text" id="mail" name="mail" style="width: 350px;" value="{{ mail }}" >
+                </br>
+                <br>
+                <label for="text">Cantidad por pagina: </label>
+                <input type="text" id="cantListar" name="cantListar" style="width: 350px;" value="{{ cantListar }}" >
+                </br>
+        
+                <input class="btn btn-info" type="submit" id="send-signup" name="signup" value="Editar" >
+                
+            </form>
+            
+            <a class="btn btn-info" href="{{ url_for('desactivar') }}">Desactivar Sitio</a>
+        </nav>
+    </div>
+</body>
+{%endblock content%}

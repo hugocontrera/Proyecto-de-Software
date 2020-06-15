@@ -1,0 +1,64 @@
+{%extends "base.html"%}
+{%block title%}Asistencia {%endblock title%}
+{%block head%}
+{{super()}}
+{%endblock head%}
+{% block content %}
+
+<body>
+<h1>Asistencias</h1>
+
+<table id="listado" data-page-length="{{cant}}" class="table table-stripped" >
+    <thead class="thead-dark">
+        <tr>
+            <th>Ciclo</th>
+            <th>Taller</th>
+            <th>Alumno</th>
+            <th>Docente</th>
+            <th>Asistencia</th>
+        </tr>
+    </thead>
+    <tbody>
+         
+        
+        {% for user in asistencias %}
+        <tr>
+            <td>{{user.ciclo_nombre}}</td>
+            <td>{{user.taller_nombre}}</td>
+            <td>{{user.nomape_est}}</td>
+            <td>{{user.nomape_doc}}</td>
+        
+            <td>
+                <nav>
+                    <div>
+                        <a type="button" class="btn btn-info" href="{{ url_for('mostrarAsistencia') }}">Mostrar Asistencia</a>
+                    </div>
+                    <div>
+                        <a type="button" class="btn btn-info" href="{{ url_for('modificarAsistencia') }}">Modificar Asistencia</a>
+                    </div>
+                    <div>
+                        <a type="button" class="btn btn-info" href="{{ url_for('cargarAsistenciaHoy', a=user['asistencia_id']) }}">Asistencia de Hoy</a>
+                    </div>
+                    
+                </nav>
+            </td>
+        </tr>
+        
+        {% endfor %}
+    </tbody>
+</table>
+
+
+<!--
+<div style="max-width: 700px; margin: 0 auto; padding-top: 40px;">
+    <a class="btn btn-info" href="{{ url_for('mostrarAsistencia') }}">Mostrar Asistencia</a>
+</div>
+<div style="max-width: 700px; margin: 0 auto; padding-top: 40px;">
+    <a class="btn btn-info" href="{{ url_for('modificarAsistencia') }}">Modificar Asistencia</a>
+</div>
+<div style="max-width: 700px; margin: 0 auto; padding-top: 40px;">
+    <a class="btn btn-info" href="{{ url_for('cargarAsistenciaHoy') }}">Cargar Asistencia de Hoy</a>
+</div>
+-->
+</body>
+{% endblock content %}

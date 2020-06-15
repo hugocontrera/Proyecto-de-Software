@@ -1,0 +1,123 @@
+{%extends "base.html"%}
+{%block title%}Listado de Usuarios{%endblock title%}
+{%block head%}
+{{super()}}
+{%endblock head%}
+{%block content%}
+
+<body>
+    <div>
+        {%for user in lista %}
+        <!-- Modal -->
+        <div class="modal fade" id="modalActualizar{{user.id}}" role="dialog">
+            <div class="modal-dialog modal-lg">
+                <!-- Modal content-->
+                {% include 'user/modalActualizarUser.html' %}
+            </div>
+        </div>
+        <!-- Modal -->
+        <div class="modal fade" id="modalAltaUser" role="dialog">
+            <div class="modal-dialog modal-lg">
+                <!-- Modal content-->
+                {% include 'user/modalAltaUser.html' %}
+            </div>
+        </div>
+        <!-- Modal -->
+        <div class="modal fade" id="myModal{{user.id}}" role="dialog">
+            <div class="modal-dialog">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Informacion de {{user.username}}</h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <ul>
+                            <li>Nombre: {{user.first_name}}</li>
+                            <li>Apellido: {{user.last_name}}</li>
+                            <li>Nombre de usuario: {{user.username}}</li>
+                            <li>Email: {{user.email}}</li>
+                            <li>Es usuario activo?{% if user.activo %} Si {% else %} No {% endif%}</li>
+                            <li>Creado en: {{user.created_at}}</li>
+                            <li>Actualizado en: {{user.updated_at}}</li>
+                        </ul>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        {%endfor%}
+        <div>
+                {% if 'administrador' in session['roles'] %}
+                <button type="button" class="btn btn-primary" data-toggle="modal"
+                data-target="#modalAltaUser">Nuevo Usuario</button>
+                {% endif %}
+            <a class="btn btn-info" href="{{url_for('listadoUsers')}}">Mostrar todos</a>
+            <a class="btn btn-info" href="{{url_for('mostrarInactivos')}}">Mostrar inactivos</a>
+            <a class="btn btn-info" href="{{url_for('mostrarActivos')}}">Mostrar activos</a>
+        </div>
+        <table id="listado" data-page-length="{{cant}}" class="table table-stripped">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Nombre de usuario</th>
+                    <th>Activo?</th>
+                    <th>Opciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in lista %}
+                <tr>
+                    <td>{{user.first_name}}</td>
+                    <td>{{user.last_name}}</td>
+                    <td>{{user.username}}</td>
+                    <td>
+                        {% if user.activo == 1 %}
+                        Si
+                        {% else %}
+                        No
+                        {% endif %}
+                    </td>
+                    <td>
+                        <nav>
+                            <button type="button" class="btn btn-info" data-toggle="modal"
+                                data-target="#myModal{{ user.id }}">Mostrar</button>
+                            {% if 'administrador' in session['roles'] %}
+                            <button type="button" class="btn btn-info" data-toggle="modal"
+                                data-target="#modalActualizar{{ user.id }}">Actualizar</button>
+                            <a href="{{url_for('eliminarUser', email=user.email)}}" class="btn btn-info"
+                                onclick="return confirm('Esta seguro de que quiere eliminar a {{user.username}}?')">Eliminar</a>
+                            {% if user.activo == 1 %}
+                            <a href="{{ url_for('bloquearUser', id=user.id) }}" class="btn btn-info">Bloquear</a>
+                            {% else %}
+                            <a href="{{ url_for('activarUser', id=user.id) }}" class="btn btn-info">Activar</a>
+                            {% endif %}
+                            {% endif %}
+                        </nav>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-info fade show alert-dismissible" role="alert">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </div>
+    <script>
+        $(document).ready(function () {
+            $('#listado').DataTable();
+        });
+    </script>
+</body>
+{%endblock content%}

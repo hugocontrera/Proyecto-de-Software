@@ -1,0 +1,162 @@
+{%extends "base.html"%}
+{%block title%}Listado de docentes{%endblock title%}
+{%block head%}
+{{super()}}
+{%endblock head%}
+{%block content%}
+
+<body>
+    <div>
+        <!-- Modal -->
+        <div class="modal fade" id="nuevoEstudiante" role="dialog">
+                <div class="modal-dialog modal-lg">
+                    <!-- Modal content-->
+                    {% include 'docente/ModalAltaDocente.html' %}
+                </div>
+            </div>
+        {%for d in lista %}
+        <!-- Modal -->
+        <div class="modal fade" id="modalActualizar{{d.id}}" role="dialog">
+            <div class="modal-dialog modal-lg">
+                <!-- Modal content-->
+                {% include 'docente/ModalActualizarDocente.html' %}
+            </div>
+        </div>
+        <!-- Modal -->
+        <div class="modal fade" id="modalEliminados" role="dialog">
+            <div class="modal-dialog modal-lg">
+                <!-- Modal content-->
+                {% include 'docente/modalDocentesEliminados.html' %}
+            </div>
+        </div>
+        <!-- Modal -->
+        <div class="modal fade" id="myModal{{d.id}}" role="dialog">
+            <div class="modal-dialog">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Informacion de {{d.nombre}}, {{d.apellido}}, {{d.numero}}</h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <ul>
+                            <li>Nombre: {{d.nombre}}</li>
+                            <li>Apellido: {{d.apellido}}</li>
+                            <li>DNI: {{d.numero}}</li>
+                            <li>Telefono: {{d.tel}}</li>
+                            <li>Fecha de Nacimiento: {{d.fecha_nac}}</li>
+                            <li>Domicilio: {{d.domicilio}}</li>
+                            <li>Genero: {{generos[d.genero_id-1].nombre}}</li>
+                            <li>Tipo de Documento: {{dnis[d.tipo_doc_id-1]['nombre']}}</li>
+                            <li>Numero de DNI: {{d.numero}}</li>
+                        </ul>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        {%endfor%}
+
+        <div>
+                {% if 'docente_new' in session['permisos'] %}
+                <button type="button" class="btn btn-info" data-toggle="modal"
+                data-target="#nuevoEstudiante" >Crear Docente</button>
+                {%endif%}
+                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modalEliminados">Docentes
+                    Eliminados</button>
+        </div>
+
+        <table id="listado" data-page-length="{{cant}}" class="table table-stripped">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>DNI</th>
+                    <th>Opciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for d in lista %}
+                <tr>
+                    <td>{{d.nombre}}</td>
+                    <td>{{d.apellido}}</td>
+                    <td>{{d.numero}}</td>
+                    <td>
+<<<<<<< HEAD
+                        {% if 'preceptor' in session['roles'] or 'docente' in session['roles'] or 'administrador' in session['roles'] %}
+=======
+                        
+>>>>>>> b383854c91585cdad2bff8bb924ec911f8371dbf
+                        <nav>
+                            {% if 'docente_show' in session['permisos'] %}
+                            <button type="button" class="btn btn-info" data-toggle="modal"
+                                data-target="#myModal{{ d.id }}">Mostrar</button>
+                            {%endif%}
+
+                            {% if 'docente_update' in session['permisos'] %}
+                            <button type="button" class="btn btn-info" data-toggle="modal"
+                                data-target="#modalActualizar{{ d.id }}">Actualizar Datos</button>
+                            {%endif%}
+                            
+                            {% if 'docente_destroy' in session['permisos'] %}
+                            <a href="{{url_for('eliminarDocenteLogico', dni=d.numero)}}" class="btn btn-info"
+                                onclick="return confirm('Esta seguro de que quiere eliminar a {{d.nombre}}?')">Eliminar</a>
+                            {% endif %}
+                        </nav>
+
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-info fade show alert-dismissible" role="alert">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </div>
+    <script>
+        $(document).ready(function () {
+            $('#listado').DataTable();
+        });
+        $(function () {
+            $('#formAltaDocente').on('submit', function(e){
+                e.preventDefault()
+                $.ajax({
+                url: "{{url_for('crearDocente')}}",
+                type: "POST",
+                data: $('#formAltaDocente').serialize(),
+                success: function(){
+                    alert('docente creado');
+                    location.reload()
+                }
+            })
+            })
+        })
+        function reactivarDocente(id) {
+            $.ajax({
+                url: "{{url_for('reactivarDocente')}}",
+                type: "POST",
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    "id": id
+                }),
+                success: function (response) {
+                    if (response['ok'] == 'ok') {
+                        alert('docente restaurado!');
+                        $("#" + id).hide()
+                    }
+                }
+            })
+        }
+    </script>
+</body>
+{%endblock content%}

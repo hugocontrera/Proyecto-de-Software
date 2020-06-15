@@ -1,0 +1,35 @@
+{%extends "base.html"%}
+{%block title%}Asistencia {%endblock title%}
+{%block head%}
+{{super()}}
+{%endblock head%}
+{% block content %}
+
+<body>
+    <h1>Mostrar Asistencias</h1>
+    <table id="listado" data-page-length="{{cant}}" class="table table-stripped" >
+        <thead class="thead-dark">
+            <tr>
+                <th>Estudiante_id</th>
+                <th>Ciclo_lectivo_id</th>
+                <th>Taller_id</th>
+                <th>Fecha</th>
+            </tr>
+        </thead>
+        <tbody>
+             
+            
+            {% for user in mostrar %}
+            <tr>
+                <td>{{user.estudiante_id}}</td>
+                <td>{{user.ciclo_lectivo_id}}</td>
+                <td>{{user.taller_id}}</td>
+                <td>{{user.fecha_asistencia}}</td>
+            </tr>
+            
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+{% endblock content %}
